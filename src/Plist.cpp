@@ -29,6 +29,7 @@
 #include <sstream>
 #include "base64.hpp"
 #include "pugixml.hpp"
+#include <algorithm>
 
 namespace Plist {
 
@@ -698,13 +699,13 @@ int countArray(const array_type& array)
 
 void readPlist(std::istream& stream, boost::any& message)
 {
-	int start = stream.tellg();
+	std::streampos start = stream.tellg();
 	stream.seekg(0, std::ifstream::end);
-	int size = ((int) stream.tellg()) - start;
+	std::streampos size = stream.tellg() - start;
 	if(size > 0)
 	{
 		stream.seekg(0, std::ifstream::beg);
-		std::vector<char> buffer(size);
+		std::vector<char> buffer(static_cast<const unsigned int>(size));
 		stream.read( (char *)&buffer[0], size );
 
 		readPlist(&buffer[0], size, message);
